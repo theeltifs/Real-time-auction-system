@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Theme 3 — Midnight Terminal Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0d1117;
+      --surface:  #161b22;
+      --card:     #161b22;
+      --card2:    #1c2128;
+      --blue:     #58a6ff;
+      --green:    #3fb950;
+      --orange:   #e3b341;
+      --red:      #f85149;
+      --purple:   #bc8cff;
+      --white:    #e6edf3;
+      --muted:    #8b949e;
+      --border:   #30363d;
+      --border2:  #21262d;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── NAVBAR ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      height: 62px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(13,17,23,0.95);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-left { display: flex; align-items: center; gap: 24px; }
+    .logo {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--white);
+    }
+    .logo .slash { color: var(--muted); }
+    .logo .project { color: var(--blue); }
+    .nav-links { display: flex; gap: 4px; }
+    .nav-link {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .85rem;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: background .2s, color .2s;
+    }
+    .nav-link:hover { background: rgba(255,255,255,0.06); color: var(--white); }
+    .nav-link.active { color: var(--white); }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .nav-icon-btn {
+      width: 32px; height: 32px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .9rem;
+      transition: background .2s;
+    }
+    .nav-icon-btn:hover { background: var(--card2); }
+    .avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #58a6ff, #3fb950);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .7rem;
+      font-weight: 700;
+      color: #0d1117;
+    }
+
+    /* ── HERO / BANNER ── */
+    .hero-banner {
+      background: linear-gradient(135deg, rgba(88,166,255,0.08) 0%, transparent 60%),
+                  linear-gradient(225deg, rgba(63,185,80,0.06) 0%, transparent 60%);
+      border-bottom: 1px solid var(--border);
+      padding: 56px 40px;
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 48px;
+      align-items: center;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .7rem;
+      color: var(--green);
+      background: rgba(63,185,80,0.1);
+      border: 1px solid rgba(63,185,80,0.3);
+      border-radius: 20px;
+      padding: 4px 12px;
+      margin-bottom: 20px;
+    }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 1.4s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
+    .hero h1 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2.4rem;
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--white);
+    }
+    .hero h1 .highlight { color: var(--blue); }
+    .hero h1 .cursor {
+      display: inline-block;
+      width: 3px;
+      background: var(--blue);
+      animation: blink 1s step-end infinite;
+      vertical-align: middle;
+      margin-left: 2px;
+      height: 2.2rem;
+    }
+    @keyframes blink { 0%,100%{opacity:1}50%{opacity:0} }
+    .hero p { margin-top: 16px; color: var(--muted); font-size: .95rem; line-height: 1.7; }
+    .hero-actions { margin-top: 28px; display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn-blue {
+      background: var(--blue);
+      color: #0d1117;
+      border: none;
+      padding: 10px 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .8rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: opacity .2s;
+    }
+    .btn-blue:hover { opacity: .85; }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--white);
+      padding: 10px 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+    }
+    .btn-outline:hover { border-color: var(--blue); background: rgba(88,166,255,0.06); }
+
+    /* Terminal card in hero */
+    .terminal {
+      background: #010409;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .terminal-header {
+      background: var(--surface);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .t-red { background: #ff5f57; }
+    .t-yellow { background: #febc2e; }
+    .t-green { background: #28c840; }
+    .term-title { font-family: 'JetBrains Mono', monospace; font-size: .72rem; color: var(--muted); margin-left: 8px; }
+    .terminal-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: .78rem; line-height: 1.8; }
+    .t-comment { color: #6e7681; }
+    .t-cmd { color: var(--white); }
+    .t-cmd::before { content: '$ '; color: var(--green); }
+    .t-output { color: var(--muted); padding-left: 14px; }
+    .t-success { color: var(--green); }
+    .t-info { color: var(--blue); }
+    .t-warn { color: var(--orange); }
+    .t-cursor::after { content: '█'; color: var(--green); animation: blink 1s step-end infinite; }
+
+    /* ── MAIN LAYOUT ── */
+    .main { display: grid; grid-template-columns: 1fr 340px; gap: 0; }
+
+    /* ── AUCTION LIST SIDE ── */
+    .auction-list { border-right: 1px solid var(--border); }
+    .list-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface);
+    }
+    .list-title { font-family: 'JetBrains Mono', monospace; font-size: .85rem; font-weight: 600; }
+    .list-count {
+      background: var(--blue);
+      color: #0d1117;
+      font-size: .65rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .filter-row {
+      padding: 12px 24px;
+      border-bottom: 1px solid var(--border2);
+      display: flex;
+      gap: 8px;
+    }
+    .filter-chip {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .7rem;
+      padding: 4px 12px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .filter-chip:hover, .filter-chip.active { border-color: var(--blue); color: var(--blue); background: rgba(88,166,255,0.06); }
+
+    .auction-item {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border2);
+      cursor: pointer;
+      transition: background .15s;
+      display: grid;
+      grid-template-columns: 56px 1fr auto;
+      gap: 16px;
+      align-items: center;
+    }
+    .auction-item:hover { background: rgba(88,166,255,0.04); }
+    .auction-item.active { background: rgba(88,166,255,0.08); border-left: 3px solid var(--blue); }
+
+    .item-icon {
+      width: 48px; height: 48px;
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+    }
+    .item-title { font-size: .9rem; font-weight: 600; color: var(--white); margin-bottom: 4px; }
+    .item-meta { font-size: .75rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+    .item-status {
+      display: inline-block;
+      font-size: .6rem;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: 6px;
+    }
+    .status-live { background: rgba(63,185,80,0.15); color: var(--green); border: 1px solid rgba(63,185,80,0.3); }
+    .status-hot { background: rgba(248,81,73,0.15); color: var(--red); border: 1px solid rgba(248,81,73,0.3); }
+    .status-end { background: rgba(227,179,65,0.15); color: var(--orange); border: 1px solid rgba(227,179,65,0.3); }
+
+    .item-price { font-family: 'JetBrains Mono', monospace; font-size: .9rem; font-weight: 600; color: var(--blue); text-align: right; }
+    .item-timer { font-family: 'JetBrains Mono', monospace; font-size: .72rem; color: var(--muted); text-align: right; margin-top: 4px; }
+    .item-timer.urgent { color: var(--red); }
+
+    /* ── SIDEBAR ── */
+    .sidebar { }
+    .sidebar-block {
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-header {
+      padding: 14px 20px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .78rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .sidebar-header .live-badge {
+      display: flex; align-items: center; gap: 5px;
+      font-size: .65rem;
+      color: var(--green);
+    }
+
+    .feed-item-row {
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border2);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .74rem;
+    }
+    .feed-item-row:last-child { border-bottom: none; }
+    .feed-user { color: var(--blue); }
+    .feed-action { color: var(--muted); }
+    .feed-amount-green { color: var(--green); font-weight: 600; }
+    .feed-timestamp { color: #484f58; font-size: .65rem; margin-top: 2px; }
+
+    /* Stats sidebar */
+    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; }
+    .stat-cell {
+      padding: 16px 20px;
+      border-right: 1px solid var(--border2);
+      border-bottom: 1px solid var(--border2);
+    }
+    .stat-cell:nth-child(2n) { border-right: none; }
+    .stat-cell:nth-last-child(-n+2) { border-bottom: none; }
+    .stat-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--white);
+    }
+    .stat-num.blue { color: var(--blue); }
+    .stat-num.green { color: var(--green); }
+    .stat-label { font-size: .65rem; color: var(--muted); margin-top: 3px; letter-spacing: .5px; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .72rem;
+      color: var(--muted);
+    }
+    footer .logo { color: var(--white); font-size: .85rem; }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { color: var(--muted); text-decoration: none; transition: color .2s; }
+    .footer-links a:hover { color: var(--blue); }
+
+    /* ── LABEL ── */
+    .preview-label {
+      text-align: center;
+      padding: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .65rem;
+      letter-spacing: 3px;
+      color: var(--green);
+      background: rgba(63,185,80,0.05);
+      border-bottom: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-label">▶ THEME 3 — MIDNIGHT TERMINAL (Developer-core Dark) — PREVIEW</div>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-left">
+    <div class="logo">bid<span class="slash">/</span><span class="project">vault</span></div>
+    <div class="nav-links">
+      <a href="#" class="nav-link active">Auctions</a>
+      <a href="#" class="nav-link">Live</a>
+      <a href="#" class="nav-link">Sellers</a>
+      <a href="#" class="nav-link">Docs</a>
+    </div>
+  </div>
+  <div class="nav-right">
+    <div class="nav-icon-btn">🔔</div>
+    <div class="avatar">AH</div>
+  </div>
+</nav>
+
+<!-- HERO BANNER -->
+<div class="hero-banner">
+  <div>
+    <div class="hero-badge"><div class="dot"></div> 247 auctions live right now</div>
+    <h1>Real-time bidding,<br/><span class="highlight">zero latency.</span><span class="cursor"></span></h1>
+    <p>WebSocket-powered live auctions. Every bid is instant. Every price is live. Built for speed, built for winners.</p>
+    <div class="hero-actions">
+      <button class="btn-blue">→ View Auctions</button>
+      <button class="btn-outline">API Docs</button>
+    </div>
+  </div>
+
+  <div class="terminal">
+    <div class="terminal-header">
+      <div class="term-dot t-red"></div>
+      <div class="term-dot t-yellow"></div>
+      <div class="term-dot t-green"></div>
+      <div class="term-title">bid-engine — live feed</div>
+    </div>
+    <div class="terminal-body">
+      <div class="t-comment"># WebSocket connection established</div>
+      <div class="t-cmd">connect wss://bidvault.io/live</div>
+      <div class="t-success">✓ Connected to bid engine v2.4</div>
+      <br/>
+      <div class="t-info">[02:14:38] NEW_BID apex-x9</div>
+      <div class="t-output">user: phantom_bid → $48,200</div>
+      <div class="t-info">[02:14:36] NEW_BID skyline-nyc</div>
+      <div class="t-output">user: alex_m → $1,240,000</div>
+      <div class="t-warn">[02:14:22] AUCTION_ENDING</div>
+      <div class="t-output">nexus-007 → 8m 22s remaining</div>
+      <div class="t-info">[02:14:11] NEW_BID nexus-007</div>
+      <div class="t-output">user: nightowl_22 → $12,500</div>
+      <div class="t-cursor"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <!-- AUCTION LIST -->
+  <div class="auction-list">
+    <div class="list-header">
+      <div class="list-title">Active Auctions</div>
+      <div class="list-count">247 live</div>
+    </div>
+    <div class="filter-row">
+      <div class="filter-chip active">All</div>
+      <div class="filter-chip">Automotive</div>
+      <div class="filter-chip">Real Estate</div>
+      <div class="filter-chip">Collectibles</div>
+      <div class="filter-chip">Technology</div>
+    </div>
+
+    <div class="auction-item active">
+      <div class="item-icon">🏍️</div>
+      <div>
+        <div class="item-title">Apex SuperBike X9 <span class="item-status status-live">LIVE</span></div>
+        <div class="item-meta">auction/apex-x9 · 14 bidders · ends 2h 14m</div>
+      </div>
+      <div>
+        <div class="item-price">$48,200</div>
+        <div class="item-timer">02:14:38</div>
+      </div>
+    </div>
+
+    <div class="auction-item">
+      <div class="item-icon">🏠</div>
+      <div>
+        <div class="item-title">Skyline Penthouse NYC <span class="item-status status-hot">HOT</span></div>
+        <div class="item-meta">auction/skyline-nyc · 89 bidders · ends 42m</div>
+      </div>
+      <div>
+        <div class="item-price">$1.24M</div>
+        <div class="item-timer urgent">00:42:11</div>
+      </div>
+    </div>
+
+    <div class="auction-item">
+      <div class="item-icon">⌚</div>
+      <div>
+        <div class="item-title">Nexus Chrono Ref.007 <span class="item-status status-end">ENDING</span></div>
+        <div class="item-meta">auction/nexus-007 · 31 bidders · ends 8m</div>
+      </div>
+      <div>
+        <div class="item-price">$12,500</div>
+        <div class="item-timer urgent">00:08:22</div>
+      </div>
+    </div>
+
+    <div class="auction-item">
+      <div class="item-icon">🎨</div>
+      <div>
+        <div class="item-title">Abstract #44 by K. Mori <span class="item-status status-live">LIVE</span></div>
+        <div class="item-meta">auction/mori-044 · 7 bidders · ends 6h 50m</div>
+      </div>
+      <div>
+        <div class="item-price">$8,800</div>
+        <div class="item-timer">06:50:04</div>
+      </div>
+    </div>
+
+    <div class="auction-item">
+      <div class="item-icon">💻</div>
+      <div>
+        <div class="item-title">Vintage IBM System/370 <span class="item-status status-live">LIVE</span></div>
+        <div class="item-meta">auction/ibm-370 · 22 bidders · ends 1d 4h</div>
+      </div>
+      <div>
+        <div class="item-price">$3,200</div>
+        <div class="item-timer">28:14:00</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <!-- Stats -->
+    <div class="sidebar-block">
+      <div class="sidebar-header">Platform Stats</div>
+      <div class="stat-grid">
+        <div class="stat-cell">
+          <div class="stat-num green">247</div>
+          <div class="stat-label">live auctions</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-num blue">12.8k</div>
+          <div class="stat-label">active bidders</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-num">$4.2M</div>
+          <div class="stat-label">total sold</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-num green">98.4%</div>
+          <div class="stat-label">uptime</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Bid Feed -->
+    <div class="sidebar-block">
+      <div class="sidebar-header">
+        Live Feed
+        <div class="live-badge"><div class="dot"></div>live</div>
+      </div>
+      <div class="feed-item-row">
+        <div><span class="feed-user">phantom_bid</span> <span class="feed-action">bid on</span> apex-x9</div>
+        <div><span class="feed-amount-green">$48,200</span></div>
+        <div class="feed-timestamp">2s ago · +$1,200 from prev</div>
+      </div>
+      <div class="feed-item-row">
+        <div><span class="feed-user">alex_m</span> <span class="feed-action">bid on</span> skyline-nyc</div>
+        <div><span class="feed-amount-green">$1,240,000</span></div>
+        <div class="feed-timestamp">8s ago · +$40,000 from prev</div>
+      </div>
+      <div class="feed-item-row">
+        <div><span class="feed-user">nightowl_22</span> <span class="feed-action">bid on</span> nexus-007</div>
+        <div><span class="feed-amount-green">$12,500</span></div>
+        <div class="feed-timestamp">21s ago · +$500 from prev</div>
+      </div>
+      <div class="feed-item-row">
+        <div><span class="feed-user">0xB7e…1d4</span> <span class="feed-action">bid on</span> apex-x9</div>
+        <div><span class="feed-amount-green">$47,000</span></div>
+        <div class="feed-timestamp">45s ago · outbid by phantom_bid</div>
+      </div>
+      <div class="feed-item-row">
+        <div><span class="feed-user">collector_99</span> <span class="feed-action">bid on</span> mori-044</div>
+        <div><span class="feed-amount-green">$8,800</span></div>
+        <div class="feed-timestamp">1m 12s ago · new high</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="logo">bid/vault</div>
+  <div>© 2026 BidVault, Inc. · WebSocket v2.4 · 12ms avg latency</div>
+  <div class="footer-links">
+    <a href="#">Status</a>
+    <a href="#">API</a>
+    <a href="#">Docs</a>
+    <a href="#">Support</a>
+  </div>
+</footer>
+
+</body>
+</html>

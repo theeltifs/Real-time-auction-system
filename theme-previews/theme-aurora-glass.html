@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Aurora Glass — Auction System</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#07070f;
+  --s1:#0d0d1a;
+  --s2:#111120;
+  --glass:rgba(255,255,255,0.03);
+  --glass-hover:rgba(255,255,255,0.06);
+  --border:rgba(255,255,255,0.07);
+  --border-glow:rgba(120,80,255,0.35);
+  --violet:#7c3aed;
+  --violet-l:#a78bfa;
+  --indigo:#4f46e5;
+  --pink:#ec4899;
+  --amber:#f59e0b;
+  --emerald:#10b981;
+  --white:#f8fafc;
+  --muted:#64748b;
+  --text2:#94a3b8;
+}
+
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--white);
+  font-family:'Inter',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ─── AURORA BLOBS ─── */
+.aurora{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  overflow:hidden;
+}
+.blob{
+  position:absolute;
+  border-radius:50%;
+  filter:blur(120px);
+  opacity:.18;
+  animation:drift 18s ease-in-out infinite;
+}
+.blob1{width:700px;height:700px;background:radial-gradient(circle,#7c3aed,transparent);top:-200px;left:-200px;animation-delay:0s}
+.blob2{width:600px;height:600px;background:radial-gradient(circle,#4f46e5,transparent);bottom:-100px;right:-100px;animation-delay:-6s}
+.blob3{width:400px;height:400px;background:radial-gradient(circle,#ec4899,transparent);top:40%;left:50%;animation-delay:-12s;opacity:.10}
+@keyframes drift{
+  0%,100%{transform:translate(0,0) scale(1)}
+  33%{transform:translate(40px,-30px) scale(1.05)}
+  66%{transform:translate(-20px,40px) scale(.97)}
+}
+
+/* ─── LAYOUT ─── */
+.wrap{position:relative;z-index:1}
+
+/* ─── NAVBAR ─── */
+nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 40px;height:64px;
+  background:rgba(7,7,15,0.7);
+  backdrop-filter:blur(20px) saturate(180%);
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:200;
+}
+.logo{
+  font-family:'Syne',sans-serif;
+  font-size:1.25rem;font-weight:800;
+  letter-spacing:-.5px;
+  background:linear-gradient(135deg,#a78bfa,#ec4899);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.nav-center{display:flex;gap:4px}
+.nav-item{
+  position:relative;
+  padding:8px 16px;
+  font-size:.85rem;font-weight:500;
+  color:var(--text2);
+  text-decoration:none;
+  border-radius:8px;
+  transition:color .2s,background .2s;
+  cursor:pointer;
+}
+.nav-item:hover{color:var(--white);background:rgba(255,255,255,0.05)}
+.nav-item.active{color:var(--white)}
+.nav-item.active::after{
+  content:'';position:absolute;bottom:-17px;left:50%;transform:translateX(-50%);
+  width:20px;height:2px;
+  background:linear-gradient(90deg,#7c3aed,#ec4899);
+  border-radius:2px;
+}
+.nav-right{display:flex;align-items:center;gap:12px}
+.live-ticker{
+  display:flex;align-items:center;gap:7px;
+  background:rgba(16,185,129,0.1);
+  border:1px solid rgba(16,185,129,0.25);
+  padding:5px 12px;border-radius:20px;
+  font-size:.72rem;font-weight:600;color:#34d399;
+  letter-spacing:.5px;
+}
+.pulse-dot{width:7px;height:7px;border-radius:50%;background:#10b981;animation:pulse-g 1.5s ease-in-out infinite}
+@keyframes pulse-g{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(16,185,129,.5)}70%{opacity:.8;box-shadow:0 0 0 6px rgba(16,185,129,0)}}
+.avatar-btn{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,#7c3aed,#ec4899);
+  border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;font-weight:700;color:#fff;
+  transition:transform .2s,box-shadow .2s;
+}
+.avatar-btn:hover{transform:scale(1.08);box-shadow:0 0 0 3px rgba(124,58,237,.3)}
+
+/* ─── HERO ─── */
+.hero{
+  min-height:calc(100vh - 64px);
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:0;
+  align-items:center;
+  padding:80px 40px 80px 56px;
+  position:relative;
+}
+.hero::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(ellipse 50% 60% at 0% 50%,rgba(124,58,237,.08),transparent),
+    radial-gradient(ellipse 40% 40% at 100% 0%,rgba(236,72,153,.06),transparent);
+}
+.hero-left{position:relative;z-index:1;padding-right:48px}
+.hero-label{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:.7rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;
+  color:var(--violet-l);
+  margin-bottom:28px;
+}
+.hero-label::before{content:'';width:24px;height:1px;background:var(--violet-l)}
+.hero h1{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(2.8rem,4vw,4rem);
+  font-weight:800;
+  line-height:1.05;
+  letter-spacing:-2px;
+  color:var(--white);
+}
+.hero h1 .grad{
+  background:linear-gradient(135deg,#a78bfa 0%,#ec4899 50%,#f59e0b 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-size:200%;
+  animation:grad-shift 4s ease-in-out infinite alternate;
+}
+@keyframes grad-shift{0%{background-position:0%}100%{background-position:100%}}
+.hero-sub{margin-top:20px;font-size:1.05rem;color:var(--text2);line-height:1.7;font-weight:300;max-width:480px}
+
+.hero-stats{display:flex;gap:32px;margin-top:36px}
+.hstat{border-left:2px solid rgba(167,139,250,.3);padding-left:16px}
+.hstat-val{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;color:var(--white)}
+.hstat-label{font-size:.72rem;color:var(--muted);margin-top:2px;letter-spacing:.5px}
+
+.hero-actions{display:flex;gap:12px;margin-top:40px;align-items:center}
+
+/* Magnetic button */
+.btn-mag{
+  position:relative;
+  padding:14px 32px;
+  background:linear-gradient(135deg,#7c3aed,#ec4899);
+  border:none;border-radius:12px;
+  font-family:'Inter',sans-serif;font-size:.9rem;font-weight:600;
+  color:#fff;cursor:pointer;
+  overflow:hidden;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s;
+  box-shadow:0 8px 32px rgba(124,58,237,.35);
+}
+.btn-mag::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);
+  opacity:0;transition:opacity .3s;
+}
+.btn-mag:hover{
+  transform:translateY(-3px) scale(1.02);
+  box-shadow:0 16px 48px rgba(124,58,237,.5);
+}
+.btn-mag:hover::before{opacity:1}
+.btn-mag:active{transform:translateY(0) scale(.99)}
+
+.btn-ghost-hero{
+  padding:14px 28px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:12px;
+  font-size:.9rem;font-weight:500;
+  color:var(--text2);cursor:pointer;
+  transition:all .25s;
+}
+.btn-ghost-hero:hover{background:rgba(255,255,255,.08);border-color:rgba(167,139,250,.4);color:var(--white)}
+
+/* ─── HERO RIGHT: FEATURED CARD ─── */
+.hero-right{position:relative;z-index:1}
+.featured-card{
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:24px;
+  overflow:hidden;
+  backdrop-filter:blur(12px);
+  box-shadow:0 32px 80px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.05) inset;
+  transition:transform .4s cubic-bezier(.34,1.2,.64,1),box-shadow .4s;
+}
+.featured-card:hover{
+  transform:translateY(-8px) rotateX(2deg);
+  box-shadow:0 48px 100px rgba(0,0,0,.7),0 0 40px rgba(124,58,237,.15),0 0 0 1px rgba(167,139,250,.15) inset;
+}
+.card-media{
+  position:relative;height:260px;
+  background:linear-gradient(135deg,#0d0520 0%,#1a0a3e 40%,#0d1a2e 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-size:6rem;
+  overflow:hidden;
+}
+.card-media::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 60% at 50% 100%,rgba(124,58,237,.3),transparent);
+}
+.card-media .badge-live{
+  position:absolute;top:16px;left:16px;
+  display:flex;align-items:center;gap:6px;
+  background:rgba(0,0,0,.6);
+  backdrop-filter:blur(8px);
+  border:1px solid rgba(16,185,129,.3);
+  padding:5px 12px;border-radius:20px;
+  font-size:.7rem;font-weight:600;color:#34d399;letter-spacing:1px;
+}
+.card-media .badge-hot{
+  position:absolute;top:16px;right:16px;
+  background:linear-gradient(135deg,rgba(245,158,11,.15),rgba(236,72,153,.15));
+  border:1px solid rgba(245,158,11,.3);
+  padding:4px 12px;border-radius:20px;
+  font-size:.68rem;font-weight:700;
+  color:var(--amber);letter-spacing:1px;
+}
+.card-body{padding:24px 28px}
+.card-meta-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.card-cat{font-size:.68rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--violet-l)}
+.card-countdown{
+  font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;
+  color:var(--amber);
+  background:rgba(245,158,11,.1);
+  border:1px solid rgba(245,158,11,.2);
+  padding:3px 10px;border-radius:6px;
+}
+.card h2{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;letter-spacing:-.5px;margin-bottom:6px}
+.card-desc{font-size:.85rem;color:var(--text2);line-height:1.6}
+
+/* Bid area */
+.bid-area{
+  margin-top:22px;padding:18px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:12px;
+}
+.bid-row-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px}
+.bid-info{display:flex;flex-direction:column;gap:3px}
+.bid-label{font-size:.68rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.bid-value{
+  font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;
+  background:linear-gradient(90deg,#a78bfa,#f472b6);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.bids-count{font-size:.78rem;color:var(--muted);text-align:right}
+.bids-count span{color:var(--white);font-weight:600}
+
+/* Quick bid buttons */
+.quick-bids{display:flex;gap:8px;margin-bottom:12px}
+.qbid{
+  flex:1;padding:8px 4px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:8px;
+  font-size:.78rem;font-weight:600;color:var(--text2);
+  cursor:pointer;transition:all .2s;text-align:center;
+}
+.qbid:hover{background:rgba(124,58,237,.15);border-color:rgba(167,139,250,.4);color:var(--violet-l)}
+
+.bid-btn-main{
+  width:100%;padding:14px;
+  background:linear-gradient(135deg,#7c3aed,#ec4899);
+  border:none;border-radius:10px;
+  font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;
+  color:#fff;cursor:pointer;letter-spacing:.5px;
+  position:relative;overflow:hidden;
+  transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;
+  box-shadow:0 4px 20px rgba(124,58,237,.3);
+}
+.bid-btn-main::after{
+  content:'';position:absolute;
+  top:50%;left:50%;
+  width:0;height:0;
+  background:rgba(255,255,255,.2);
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+  transition:width .5s,height .5s,opacity .5s;
+  opacity:0;
+}
+.bid-btn-main:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(124,58,237,.5)}
+.bid-btn-main:active::after{width:300px;height:300px;opacity:0}
+
+/* ─── SECTION ─── */
+.section{padding:64px 40px;position:relative;z-index:1}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:40px}
+.sec-title{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;letter-spacing:-1px}
+.sec-title span{
+  background:linear-gradient(90deg,#a78bfa,#ec4899);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.sec-link{
+  font-size:.82rem;font-weight:500;color:var(--violet-l);
+  text-decoration:none;display:flex;align-items:center;gap:6px;
+  transition:gap .2s;
+}
+.sec-link:hover{gap:10px}
+
+/* ─── AUCTION GRID ─── */
+.ag{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+
+.ac{
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:18px;
+  overflow:hidden;
+  position:relative;
+  transition:
+    transform .35s cubic-bezier(.34,1.2,.64,1),
+    box-shadow .35s,
+    border-color .35s;
+  cursor:pointer;
+}
+.ac::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(124,58,237,.08),transparent 60%);
+  opacity:0;transition:opacity .3s;pointer-events:none;z-index:1;
+}
+.ac:hover{
+  transform:translateY(-6px);
+  box-shadow:0 24px 60px rgba(0,0,0,.5),0 0 0 1px rgba(167,139,250,.2);
+  border-color:rgba(167,139,250,.25);
+}
+.ac:hover::before{opacity:1}
+
+.ac-img{
+  height:170px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:4rem;
+  position:relative;
+  overflow:hidden;
+}
+.ac-img::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:60px;
+  background:linear-gradient(to top,rgba(13,13,26,1),transparent);
+}
+.ac-body{padding:18px 20px}
+.ac-tag{
+  font-size:.65rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;
+  margin-bottom:8px;
+}
+.tag-violet{color:#a78bfa}
+.tag-pink{color:#f472b6}
+.tag-amber{color:#fbbf24}
+.ac h3{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;letter-spacing:-.3px;margin-bottom:5px}
+.ac p{font-size:.8rem;color:var(--text2);line-height:1.5}
+
+/* Progress bar for bid intensity */
+.bid-intensity{margin-top:14px}
+.bi-label{display:flex;justify-content:space-between;font-size:.68rem;color:var(--muted);margin-bottom:5px}
+.bi-bar{height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden}
+.bi-fill{
+  height:100%;border-radius:2px;
+  transition:width 1.5s cubic-bezier(.4,0,.2,1);
+}
+.bi-fill.high{background:linear-gradient(90deg,#7c3aed,#ec4899)}
+.bi-fill.med{background:linear-gradient(90deg,#4f46e5,#7c3aed)}
+.bi-fill.low{background:linear-gradient(90deg,#1d4ed8,#4f46e5)}
+
+.ac-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px;
+  border-top:1px solid rgba(255,255,255,.05);
+}
+.ac-price{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800}
+.ac-price.viol{color:#c4b5fd}
+.ac-price.pink{color:#f9a8d4}
+.ac-price.amb{color:#fcd34d}
+.ac-timer{font-size:.75rem;font-weight:500;padding:3px 9px;border-radius:6px}
+.t-norm{color:var(--text2);background:rgba(255,255,255,.05)}
+.t-warn{color:#fbbf24;background:rgba(245,158,11,.1)}
+.t-danger{color:#f87171;background:rgba(239,68,68,.1);animation:blink-red .8s ease-in-out infinite}
+@keyframes blink-red{0%,100%{opacity:1}50%{opacity:.6}}
+
+.ac-bid-btn{
+  width:calc(100% - 40px);
+  margin:0 20px 16px;
+  padding:11px;
+  background:rgba(124,58,237,.12);
+  border:1px solid rgba(167,139,250,.25);
+  border-radius:9px;
+  font-size:.82rem;font-weight:600;
+  color:#a78bfa;cursor:pointer;
+  transition:all .25s;
+  position:relative;overflow:hidden;
+}
+.ac-bid-btn::before{
+  content:'';position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,#7c3aed,#ec4899);
+  opacity:0;transition:opacity .3s;
+}
+.ac-bid-btn span{position:relative;z-index:1}
+.ac-bid-btn:hover{color:#fff;border-color:transparent;transform:none}
+.ac-bid-btn:hover::before{opacity:1}
+
+/* ─── LIVE ACTIVITY PANEL ─── */
+.activity-panel{
+  margin-top:60px;
+  display:grid;grid-template-columns:1fr 420px;gap:24px;
+}
+
+/* Outbid alert */
+.outbid-alert{
+  background:linear-gradient(135deg,rgba(239,68,68,.08),rgba(245,158,11,.05));
+  border:1px solid rgba(239,68,68,.25);
+  border-radius:14px;
+  padding:18px 22px;
+  display:flex;align-items:center;gap:16px;
+  margin-bottom:16px;
+  animation:slide-in .4s cubic-bezier(.34,1.2,.64,1);
+}
+@keyframes slide-in{from{transform:translateX(-20px);opacity:0}to{transform:translateX(0);opacity:1}}
+.alert-icon{font-size:1.5rem}
+.alert-text{flex:1}
+.alert-title{font-size:.88rem;font-weight:600;color:#f87171;margin-bottom:2px}
+.alert-sub{font-size:.78rem;color:var(--text2)}
+.alert-action{
+  padding:8px 18px;
+  background:linear-gradient(135deg,#7c3aed,#ec4899);
+  border:none;border-radius:8px;
+  font-size:.78rem;font-weight:600;color:#fff;cursor:pointer;
+  transition:opacity .2s,transform .2s;white-space:nowrap;
+}
+.alert-action:hover{opacity:.85;transform:scale(1.03)}
+
+/* Feed */
+.feed-panel{
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:18px;
+  overflow:hidden;
+}
+.feed-head{
+  padding:16px 22px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(255,255,255,.02);
+}
+.feed-title{font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700}
+.feed-count{
+  font-size:.68rem;font-weight:600;
+  background:rgba(167,139,250,.15);
+  color:#a78bfa;
+  padding:3px 10px;border-radius:20px;
+}
+.feed-row{
+  display:grid;
+  grid-template-columns:36px 1fr auto;
+  gap:12px;align-items:center;
+  padding:12px 22px;
+  border-bottom:1px solid rgba(255,255,255,.04);
+  transition:background .2s;
+}
+.feed-row:last-child{border-bottom:none}
+.feed-row:hover{background:rgba(255,255,255,.03)}
+.fa{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem}
+.fa1{background:linear-gradient(135deg,rgba(124,58,237,.3),rgba(236,72,153,.2))}
+.fa2{background:linear-gradient(135deg,rgba(79,70,229,.3),rgba(124,58,237,.2))}
+.fa3{background:linear-gradient(135deg,rgba(245,158,11,.2),rgba(234,88,12,.15))}
+.fa4{background:linear-gradient(135deg,rgba(16,185,129,.2),rgba(5,150,105,.15))}
+.fr-main{flex:1}
+.fr-user{font-size:.82rem;font-weight:600;margin-bottom:2px}
+.fr-item{font-size:.75rem;color:var(--muted)}
+.fr-amount{
+  font-family:'Syne',sans-serif;
+  font-size:.88rem;font-weight:700;
+  color:#86efac;text-align:right;white-space:nowrap;
+}
+.fr-time{font-size:.65rem;color:var(--muted);text-align:right;margin-top:2px}
+
+/* Right panel */
+.right-panel{display:flex;flex-direction:column;gap:16px}
+.info-card{
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:20px;
+}
+.ic-title{font-size:.72rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.ic-stat{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.ic-stat:last-child{border-bottom:none}
+.ic-key{font-size:.82rem;color:var(--text2)}
+.ic-val{font-size:.85rem;font-weight:600;color:var(--white)}
+.ic-val.up{color:#34d399}
+.ic-val.warn{color:#fbbf24}
+
+/* ─── FOOTER ─── */
+footer{
+  position:relative;z-index:1;
+  border-top:1px solid var(--border);
+  padding:32px 40px;
+  display:flex;justify-content:space-between;align-items:center;
+  background:rgba(7,7,15,.8);
+  backdrop-filter:blur(12px);
+}
+.f-logo{
+  font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;
+  background:linear-gradient(135deg,#a78bfa,#ec4899);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.f-copy{font-size:.78rem;color:var(--muted)}
+.f-links{display:flex;gap:24px}
+.f-links a{font-size:.78rem;color:var(--muted);text-decoration:none;transition:color .2s}
+.f-links a:hover{color:var(--violet-l)}
+
+/* ─── LABEL ─── */
+.preview-label{
+  position:relative;z-index:10;
+  text-align:center;padding:10px;
+  font-size:.65rem;letter-spacing:4px;
+  color:#a78bfa;
+  background:rgba(124,58,237,.08);
+  border-bottom:1px solid rgba(124,58,237,.2);
+}
+</style>
+</head>
+<body>
+
+<!-- Aurora background -->
+<div class="aurora">
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+</div>
+
+<div class="wrap">
+<div class="preview-label">▶ THEME A — AURORA GLASS · Vercel/Linear-level polish · hover the cards</div>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="logo">VAULT</div>
+  <div class="nav-center">
+    <a class="nav-item active">Auctions</a>
+    <a class="nav-item">Live</a>
+    <a class="nav-item">Sellers</a>
+    <a class="nav-item">Watchlist</a>
+    <a class="nav-item">Results</a>
+  </div>
+  <div class="nav-right">
+    <div class="live-ticker"><div class="pulse-dot"></div>247 Live</div>
+    <div class="avatar-btn">AH</div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-label">Real-Time Auction Platform</div>
+    <h1>Own the<br/><span class="grad">extraordinary.</span></h1>
+    <p class="hero-sub">Live bidding with zero latency. Every second counts. Every bid is instant. Built for those who refuse to settle.</p>
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-val">$4.2M</div><div class="hstat-label">Total Sold</div></div>
+      <div class="hstat"><div class="hstat-val">12.8k</div><div class="hstat-label">Bidders</div></div>
+      <div class="hstat"><div class="hstat-val">247</div><div class="hstat-label">Live Now</div></div>
+    </div>
+    <div class="hero-actions">
+      <button class="btn-mag">Start Bidding →</button>
+      <button class="btn-ghost-hero">Watch Demo</button>
+    </div>
+  </div>
+
+  <!-- Featured Auction Card -->
+  <div class="hero-right">
+    <div class="featured-card">
+      <div class="card-media">
+        🏍️
+        <div class="badge-live"><div class="pulse-dot"></div>LIVE</div>
+        <div class="badge-hot">🔥 HOT</div>
+      </div>
+      <div class="card-body">
+        <div class="card-meta-row">
+          <div class="card-cat">Automotive · Lot #A-1042</div>
+          <div class="card-countdown">02:14:38</div>
+        </div>
+        <h2>Apex SuperBike X9</h2>
+        <p class="card-desc">Limited-edition hyperbike. 230hp engine, carbon fibre frame. One of 12 produced worldwide.</p>
+
+        <div class="bid-area">
+          <div class="bid-row-top">
+            <div class="bid-info">
+              <span class="bid-label">Current Bid</span>
+              <span class="bid-value">$48,200</span>
+            </div>
+            <div class="bids-count">
+              <span>14</span> bids<br/>
+              <span>89</span> watching
+            </div>
+          </div>
+          <div class="quick-bids">
+            <div class="qbid">+$500</div>
+            <div class="qbid">+$1,000</div>
+            <div class="qbid">+$2,500</div>
+            <div class="qbid">Custom</div>
+          </div>
+          <button class="bid-btn-main">Place Bid — $48,700</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AUCTIONS -->
+<section class="section">
+  <div class="sec-head">
+    <div class="sec-title">Live <span>Auctions</span></div>
+    <a href="#" class="sec-link">View all 247 →</a>
+  </div>
+
+  <!-- Outbid alert -->
+  <div class="outbid-alert">
+    <div class="alert-icon">⚡</div>
+    <div class="alert-text">
+      <div class="alert-title">You've been outbid on Nexus Chrono Ref.007</div>
+      <div class="alert-sub">New price: $12,500 · Ends in 8 minutes — act fast</div>
+    </div>
+    <button class="alert-action">Bid Again →</button>
+  </div>
+
+  <div class="ag">
+
+    <div class="ac" onmousemove="this.style.setProperty('--mx',event.offsetX/this.offsetWidth*100+'%');this.style.setProperty('--my',event.offsetY/this.offsetHeight*100+'%')">
+      <div class="ac-img" style="background:linear-gradient(135deg,#0d0520,#1a0a3e)">🏠</div>
+      <div class="ac-body">
+        <div class="ac-tag tag-violet">Real Estate · NYC</div>
+        <h3>Skyline Penthouse</h3>
+        <p>42nd floor. Smart home. Panoramic Manhattan view. Offered fully furnished.</p>
+        <div class="bid-intensity">
+          <div class="bi-label"><span>Bid intensity</span><span style="color:#a78bfa;font-weight:600">Very High</span></div>
+          <div class="bi-bar"><div class="bi-fill high" style="width:92%"></div></div>
+        </div>
+      </div>
+      <div class="ac-footer">
+        <div class="ac-price viol">$1,240,000</div>
+        <div class="ac-timer t-warn">42m left</div>
+      </div>
+      <button class="ac-bid-btn"><span>Place Bid</span></button>
+    </div>
+
+    <div class="ac" onmousemove="this.style.setProperty('--mx',event.offsetX/this.offsetWidth*100+'%');this.style.setProperty('--my',event.offsetY/this.offsetHeight*100+'%')">
+      <div class="ac-img" style="background:linear-gradient(135deg,#0a1020,#0f1a30)">⌚</div>
+      <div class="ac-body">
+        <div class="ac-tag tag-pink">Horology · Serial #007</div>
+        <h3>Nexus Chrono Ref.007</h3>
+        <p>Swiss movement. Titanium case. Edition of 50. The rarest serial number.</p>
+        <div class="bid-intensity">
+          <div class="bi-label"><span>Bid intensity</span><span style="color:#f472b6;font-weight:600">Extreme</span></div>
+          <div class="bi-bar"><div class="bi-fill high" style="width:98%;background:linear-gradient(90deg,#ec4899,#f59e0b)"></div></div>
+        </div>
+      </div>
+      <div class="ac-footer">
+        <div class="ac-price pink">$12,500</div>
+        <div class="ac-timer t-danger">8m left</div>
+      </div>
+      <button class="ac-bid-btn" style="color:#f472b6;border-color:rgba(244,114,182,.25);background:rgba(236,72,153,.1)"><span>Place Bid</span></button>
+    </div>
+
+    <div class="ac" onmousemove="this.style.setProperty('--mx',event.offsetX/this.offsetWidth*100+'%');this.style.setProperty('--my',event.offsetY/this.offsetHeight*100+'%')">
+      <div class="ac-img" style="background:linear-gradient(135deg,#120a00,#1a1000)">🎨</div>
+      <div class="ac-body">
+        <div class="ac-tag tag-amber">Art · Contemporary</div>
+        <h3>Abstract #44 — K. Mori</h3>
+        <p>Signed canvas, 120×80cm. Featured in MoMA 2024 emerging artists programme.</p>
+        <div class="bid-intensity">
+          <div class="bi-label"><span>Bid intensity</span><span style="color:#fbbf24;font-weight:600">Moderate</span></div>
+          <div class="bi-bar"><div class="bi-fill med" style="width:54%;background:linear-gradient(90deg,#f59e0b,#ef4444)"></div></div>
+        </div>
+      </div>
+      <div class="ac-footer">
+        <div class="ac-price amb">$8,800</div>
+        <div class="ac-timer t-norm">6h 50m</div>
+      </div>
+      <button class="ac-bid-btn" style="color:#fbbf24;border-color:rgba(245,158,11,.25);background:rgba(245,158,11,.08)"><span>Place Bid</span></button>
+    </div>
+
+  </div>
+
+  <!-- Activity -->
+  <div class="activity-panel">
+    <div>
+      <div class="feed-panel">
+        <div class="feed-head">
+          <div class="feed-title">Live Bid Feed</div>
+          <div class="feed-count">12 bids/min</div>
+        </div>
+        <div class="feed-row">
+          <div class="fa fa1">🏍️</div>
+          <div class="fr-main">
+            <div class="fr-user">phantom_bid</div>
+            <div class="fr-item">Apex SuperBike X9</div>
+          </div>
+          <div><div class="fr-amount">$48,200</div><div class="fr-time">2s ago</div></div>
+        </div>
+        <div class="feed-row">
+          <div class="fa fa2">🏠</div>
+          <div class="fr-main">
+            <div class="fr-user">alex_m</div>
+            <div class="fr-item">Skyline Penthouse</div>
+          </div>
+          <div><div class="fr-amount">$1,240,000</div><div class="fr-time">8s ago</div></div>
+        </div>
+        <div class="feed-row">
+          <div class="fa fa3">⌚</div>
+          <div class="fr-main">
+            <div class="fr-user">nightowl_22</div>
+            <div class="fr-item">Nexus Chrono Ref.007</div>
+          </div>
+          <div><div class="fr-amount">$12,500</div><div class="fr-time">21s ago</div></div>
+        </div>
+        <div class="feed-row">
+          <div class="fa fa4">🎨</div>
+          <div class="fr-main">
+            <div class="fr-user">collector_99</div>
+            <div class="fr-item">Abstract #44</div>
+          </div>
+          <div><div class="fr-amount">$8,800</div><div class="fr-time">1m ago</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-panel">
+      <div class="info-card">
+        <div class="ic-title">Your Activity</div>
+        <div class="ic-stat"><span class="ic-key">Active Bids</span><span class="ic-val up">3</span></div>
+        <div class="ic-stat"><span class="ic-key">Watchlist</span><span class="ic-val">7 items</span></div>
+        <div class="ic-stat"><span class="ic-key">Won This Month</span><span class="ic-val up">2</span></div>
+        <div class="ic-stat"><span class="ic-key">Outbid Alerts</span><span class="ic-val warn">1 pending</span></div>
+      </div>
+      <div class="info-card">
+        <div class="ic-title">Platform</div>
+        <div class="ic-stat"><span class="ic-key">Total Volume</span><span class="ic-val">$4.2M</span></div>
+        <div class="ic-stat"><span class="ic-key">Success Rate</span><span class="ic-val up">98.4%</span></div>
+        <div class="ic-stat"><span class="ic-key">Avg Bid Latency</span><span class="ic-val up">12ms</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="f-logo">VAULT</div>
+  <div class="f-copy">© 2026 Vault Auctions. All rights reserved.</div>
+  <div class="f-links">
+    <a href="#">Privacy</a><a href="#">Terms</a><a href="#">API</a><a href="#">Support</a>
+  </div>
+</footer>
+</div>
+</body>
+</html>
